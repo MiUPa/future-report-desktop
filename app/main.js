@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { spawn } = require('child_process');
 const axios = require('axios');
+const isDev = process.env.NODE_ENV === 'development';
 
 // Pythonバックエンドプロセス
 let pythonProcess = null;
@@ -14,53 +15,53 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      nodeIntegration: true,
+      contextIsolation: false
     }
   });
 
   // 開発モードの場合はデベロッパーツールを開く
-  if (process.argv.includes('--dev')) {
+  if (isDev) {
     mainWindow.webContents.openDevTools();
   }
 
   // HTMLファイルをロード
   mainWindow.loadFile(path.join(__dirname, 'frontend', 'index.html'));
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
 }
 
 // Pythonバックエンドを開始
-function startPythonBackend() {
-  const resourcesPath = process.resourcesPath;
-  let scriptPath;
+function startBackendServer() {
+  const serverPath = isDev 
+    ? path.join(__dirname, 'backend', 'server.py')
+    : path.join(process.resourcesPath, 'backend', 'server.py');
   
-  // 開発モードとプロダクションモードでパスを分ける
-  if (app.isPackaged) {
-    scriptPath = path.join(resourcesPath, 'backend', 'server.py');
-  } else {
-    scriptPath = path.join(__dirname, 'backend', 'server.py');
-  }
-
-  // Pythonプロセスを開始
-  pythonProcess = spawn('python', [scriptPath]);
+  console.log('Starting backend server from:', serverPath);
+  
+  pythonProcess = spawn('python', [serverPath], {
+    stdio: 'pipe',
+    shell: true
+  });
   
   pythonProcess.stdout.on('data', (data) => {
-    console.log(`Python stdout: ${data}`);
+    console.log(`Backend server output: ${data}`);
   });
   
   pythonProcess.stderr.on('data', (data) => {
-    console.error(`Python stderr: ${data}`);
+    console.error(`Backend server error: ${data}`);
   });
   
   pythonProcess.on('close', (code) => {
-    console.log(`Python process exited with code ${code}`);
+    console.log(`Backend server exited with code ${code}`);
   });
 }
 
 // アプリの準備ができたらウィンドウを作成
 app.whenReady().then(() => {
-  // 外部で起動したサーバーを使用するため、ここでは起動しない
-  // startPythonBackend();
+  startBackendServer();
   createWindow();
   
   app.on('activate', function () {
@@ -76,7 +77,7 @@ app.on('window-all-closed', function () {
 });
 
 // アプリが終了するときにPythonプロセスを終了
-app.on('will-quit', () => {
+app.on('before-quit', () => {
   if (pythonProcess) {
     pythonProcess.kill();
   }
@@ -142,5 +143,22 @@ ipcMain.handle('save-settings', async (event, data) => {
   } catch (error) {
     console.error('設定保存エラー:', error);
     return { error: '設定の保存中にエラーが発生しました' };
+  }
+});
+
+// 新しいIPC処理を追加
+ipcMain.handle('runPrediction', async (event, params) => {
+  try {
+    const response = await fetch('http://localhost:5003/api/predict', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('予測実行エラー:', error);
+    throw error;
   }
 }); 
