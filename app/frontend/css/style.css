@@ -299,4 +299,95 @@ input:checked + .slider:before {
 .auto-mode-description {
   font-size: 0.9em;
   color: #666;
+}
+
+/* ヘルプセクションのスタイル */
+.help-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.help-section {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.help-section h3 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 8px;
+}
+
+.help-section h4 {
+  color: #3498db;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.help-section p, 
+.help-section ul, 
+.help-section ol {
+  margin-bottom: 12px;
+}
+
+.help-section ul li, 
+.help-section ol li {
+  margin-bottom: 8px;
+}
+
+.help-section pre {
+  background-color: #f0f0f0;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.faq-item {
+  margin-bottom: 16px;
+}
+
+.faq-item h4 {
+  background-color: #f0f7ff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+/* ツールチップスタイル */
+.tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 1000;
+  max-width: 250px;
+  text-align: center;
+  pointer-events: none;
+  animation: fadeIn 0.3s;
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 6px 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 } 
