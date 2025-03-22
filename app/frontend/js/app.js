@@ -423,77 +423,137 @@ function showTooltip(element, message) {
   
   document.body.appendChild(tooltip);
   
-  // 3秒後にツールチップを削除
-  setTimeout(() => {
-    if (tooltip.parentNode) {
-      tooltip.parentNode.removeChild(tooltip);
-    }
-  }, 3000);
+  return tooltip;
 }
 
 // ツールチップをセットアップする関数
 function setupTooltips() {
+  // 表示用のタイマーを保持する変数
+  let tooltipTimer = null;
+  let currentTooltip = null;
+  
+  // マウスアウト時にツールチップを非表示にする関数
+  function hideTooltip() {
+    if (currentTooltip && currentTooltip.parentNode) {
+      currentTooltip.parentNode.removeChild(currentTooltip);
+      currentTooltip = null;
+    }
+    
+    if (tooltipTimer) {
+      clearTimeout(tooltipTimer);
+      tooltipTimer = null;
+    }
+  }
+  
   // 予測期間のツールチップ
   const predictionPeriod = document.getElementById('prediction-period');
   if (predictionPeriod) {
     predictionPeriod.addEventListener('mouseover', () => {
-      showTooltip(predictionPeriod, '予測する将来の期間を選択します');
+      hideTooltip(); // 既存のツールチップをクリア
+      
+      tooltipTimer = setTimeout(() => {
+        currentTooltip = showTooltip(predictionPeriod, '予測する将来の期間を選択します');
+      }, 800); // 800ミリ秒（0.8秒）のホバー後に表示
     });
+    
+    predictionPeriod.addEventListener('mouseout', hideTooltip);
   }
   
   // 予測実行ボタンのツールチップ
   const runPredictionBtn = document.getElementById('run-prediction');
   if (runPredictionBtn) {
     runPredictionBtn.addEventListener('mouseover', () => {
-      showTooltip(runPredictionBtn, '選択した期間の需要予測を実行します');
+      hideTooltip();
+      
+      tooltipTimer = setTimeout(() => {
+        currentTooltip = showTooltip(runPredictionBtn, '選択した期間の需要予測を実行します');
+      }, 800);
     });
+    
+    runPredictionBtn.addEventListener('mouseout', hideTooltip);
   }
   
   // データファイル選択のツールチップ
   const dataFile = document.getElementById('data-file');
   if (dataFile) {
     dataFile.addEventListener('mouseover', () => {
-      showTooltip(dataFile, 'CSVファイル形式のデータをインポートします。日付,売上,特徴量(オプション)の列が必要です。');
+      hideTooltip();
+      
+      tooltipTimer = setTimeout(() => {
+        currentTooltip = showTooltip(dataFile, 'CSVファイル形式のデータをインポートします。日付,売上,特徴量(オプション)の列が必要です。');
+      }, 800);
     });
+    
+    dataFile.addEventListener('mouseout', hideTooltip);
   }
   
   // インポートボタンのツールチップ
   const importDataBtn = document.getElementById('import-data');
   if (importDataBtn) {
     importDataBtn.addEventListener('mouseover', () => {
-      showTooltip(importDataBtn, '選択したCSVファイルをインポートします');
+      hideTooltip();
+      
+      tooltipTimer = setTimeout(() => {
+        currentTooltip = showTooltip(importDataBtn, '選択したCSVファイルをインポートします');
+      }, 800);
     });
+    
+    importDataBtn.addEventListener('mouseout', hideTooltip);
   }
   
   // 自動設定モードスイッチのツールチップ
   const autoMode = document.getElementById('auto-mode');
   if (autoMode) {
     autoMode.parentElement.addEventListener('mouseover', () => {
-      showTooltip(autoMode.parentElement, 'オンにすると、データサイズに応じて最適なパラメータが自動的に設定されます');
+      hideTooltip();
+      
+      tooltipTimer = setTimeout(() => {
+        currentTooltip = showTooltip(autoMode.parentElement, 'オンにすると、データサイズに応じて最適なパラメータが自動的に設定されます');
+      }, 800);
     });
+    
+    autoMode.parentElement.addEventListener('mouseout', hideTooltip);
   }
   
   // モデル学習ボタンのツールチップ
   const trainModelBtn = document.getElementById('train-model');
   if (trainModelBtn) {
     trainModelBtn.addEventListener('mouseover', () => {
-      showTooltip(trainModelBtn, '予測モデルの学習を開始します');
+      hideTooltip();
+      
+      tooltipTimer = setTimeout(() => {
+        currentTooltip = showTooltip(trainModelBtn, '予測モデルの学習を開始します');
+      }, 800);
     });
+    
+    trainModelBtn.addEventListener('mouseout', hideTooltip);
   }
   
   // 設定の自動モードスイッチのツールチップ
   const settingsAutoMode = document.getElementById('settings-auto-mode');
   if (settingsAutoMode) {
     settingsAutoMode.parentElement.addEventListener('mouseover', () => {
-      showTooltip(settingsAutoMode.parentElement, 'オンにすると、全体の設定が自動的に最適化されます');
+      hideTooltip();
+      
+      tooltipTimer = setTimeout(() => {
+        currentTooltip = showTooltip(settingsAutoMode.parentElement, 'オンにすると、全体の設定が自動的に最適化されます');
+      }, 800);
     });
+    
+    settingsAutoMode.parentElement.addEventListener('mouseout', hideTooltip);
   }
   
   // 設定保存ボタンのツールチップ
   const saveSettingsBtn = document.getElementById('save-settings');
   if (saveSettingsBtn) {
     saveSettingsBtn.addEventListener('mouseover', () => {
-      showTooltip(saveSettingsBtn, '設定を保存します');
+      hideTooltip();
+      
+      tooltipTimer = setTimeout(() => {
+        currentTooltip = showTooltip(saveSettingsBtn, '設定を保存します');
+      }, 800);
     });
+    
+    saveSettingsBtn.addEventListener('mouseout', hideTooltip);
   }
 } 
