@@ -98,14 +98,42 @@
           <div class="tab-content" id="model-training-tab">
             <h2>モデル学習</h2>
             <div class="training-controls">
-              <div class="form-group">
-                <label for="epochs">学習エポック数</label>
-                <input type="number" id="epochs" min="1" value="50">
+              <div class="form-group switch-container">
+                <label for="auto-mode">自動設定モード</label>
+                <label class="switch">
+                  <input type="checkbox" id="auto-mode" checked>
+                  <span class="slider round"></span>
+                </label>
+                <span class="auto-mode-description">オン（データサイズに応じて最適なパラメータを自動設定します）</span>
               </div>
-              <div class="form-group">
-                <label for="batch-size">バッチサイズ</label>
-                <input type="number" id="batch-size" min="1" value="32">
+              
+              <div id="manual-settings" style="display: none;">
+                <div class="form-group">
+                  <label for="epochs">学習エポック数</label>
+                  <input type="number" id="epochs" min="1" value="50">
+                </div>
+                <div class="form-group">
+                  <label for="batch-size">バッチサイズ</label>
+                  <input type="number" id="batch-size" min="1" value="32">
+                </div>
+                <div class="form-group">
+                  <label for="model-type">モデルタイプ</label>
+                  <select id="model-type">
+                    <option value="lstm">LSTM</option>
+                    <option value="gru">GRU</option>
+                    <option value="transformer">Transformer</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="hidden-layers">隠れ層数</label>
+                  <input type="number" id="hidden-layers" min="1" value="2">
+                </div>
+                <div class="form-group">
+                  <label for="hidden-units">隠れユニット数</label>
+                  <input type="number" id="hidden-units" min="1" value="64">
+                </div>
               </div>
+              
               <button id="train-model" class="btn-primary">モデル学習開始</button>
             </div>
             
@@ -121,22 +149,34 @@
           <div class="tab-content" id="settings-tab">
             <h2>設定</h2>
             <div class="settings-form">
-              <div class="form-group">
-                <label for="model-type">予測モデルタイプ</label>
-                <select id="model-type">
-                  <option value="lstm">LSTM</option>
-                  <option value="gru">GRU</option>
-                  <option value="transformer">Transformer</option>
-                </select>
+              <div class="form-group switch-container">
+                <label for="settings-auto-mode">自動設定モード</label>
+                <label class="switch">
+                  <input type="checkbox" id="settings-auto-mode" checked>
+                  <span class="slider round"></span>
+                </label>
+                <span class="auto-mode-description">オン（最適なパラメータを自動設定します）</span>
               </div>
-              <div class="form-group">
-                <label for="hidden-layers">隠れ層数</label>
-                <input type="number" id="hidden-layers" min="1" value="2">
+              
+              <div id="settings-manual" style="display: none;">
+                <div class="form-group">
+                  <label for="model-type">予測モデルタイプ</label>
+                  <select id="model-type">
+                    <option value="lstm">LSTM</option>
+                    <option value="gru">GRU</option>
+                    <option value="transformer">Transformer</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="hidden-layers">隠れ層数</label>
+                  <input type="number" id="hidden-layers" min="1" value="2">
+                </div>
+                <div class="form-group">
+                  <label for="hidden-units">隠れユニット数</label>
+                  <input type="number" id="hidden-units" min="1" value="64">
+                </div>
               </div>
-              <div class="form-group">
-                <label for="hidden-units">隠れユニット数</label>
-                <input type="number" id="hidden-units" min="1" value="64">
-              </div>
+              
               <button id="save-settings" class="btn-primary">設定を保存</button>
             </div>
           </div>

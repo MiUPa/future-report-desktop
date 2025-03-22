@@ -22,6 +22,40 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
+  // 自動設定モードの切り替え処理（モデル学習タブ）
+  const autoModeToggle = document.getElementById('auto-mode');
+  const manualSettings = document.getElementById('manual-settings');
+  const autoModeDescription = document.querySelector('.auto-mode-description');
+  
+  if (autoModeToggle) {
+    autoModeToggle.addEventListener('change', function() {
+      if (this.checked) {
+        manualSettings.style.display = 'none';
+        autoModeDescription.textContent = 'オン（データサイズに応じて最適なパラメータを自動設定します）';
+      } else {
+        manualSettings.style.display = 'block';
+        autoModeDescription.textContent = 'オフ（手動でパラメータを設定します）';
+      }
+    });
+  }
+  
+  // 自動設定モードの切り替え処理（設定タブ）
+  const settingsAutoModeToggle = document.getElementById('settings-auto-mode');
+  const settingsManual = document.getElementById('settings-manual');
+  const settingsAutoModeDescription = document.querySelector('#settings-tab .auto-mode-description');
+  
+  if (settingsAutoModeToggle) {
+    settingsAutoModeToggle.addEventListener('change', function() {
+      if (this.checked) {
+        settingsManual.style.display = 'none';
+        settingsAutoModeDescription.textContent = 'オン（最適なパラメータを自動設定します）';
+      } else {
+        settingsManual.style.display = 'block';
+        settingsAutoModeDescription.textContent = 'オフ（手動でパラメータを設定します）';
+      }
+    });
+  }
+  
   // 予測実行ボタンのイベントハンドラ
   const runPredictionBtn = document.getElementById('run-prediction');
   if (runPredictionBtn) {
@@ -236,13 +270,39 @@ function renderDataTable(data) {
 
 // モデルを学習する関数
 async function trainModel() {
-  const epochs = document.getElementById('epochs').value;
-  const batchSize = document.getElementById('batch-size').value;
+  // 自動設定モードかどうかを確認
+  const isAutoMode = document.getElementById('auto-mode').checked;
   
-  // 値の検証
-  if (epochs < 1 || batchSize < 1) {
-    alert('エポック数とバッチサイズは1以上の値を指定してください。');
-    return;
+  // パラメータを取得
+  let params = {};
+  
+  if (isAutoMode) {
+    // 自動モードの場合は、自動設定フラグのみ送信
+    params = {
+      autoMode: true
+    };
+  } else {
+    // 手動モードの場合は、ユーザー設定値を使用
+    const epochs = document.getElementById('epochs').value;
+    const batchSize = document.getElementById('batch-size').value;
+    const modelType = document.getElementById('model-type').value;
+    const hiddenLayers = document.getElementById('hidden-layers').value;
+    const hiddenUnits = document.getElementById('hidden-units').value;
+    
+    // 値の検証
+    if (epochs < 1 || batchSize < 1 || hiddenLayers < 1 || hiddenUnits < 1) {
+      alert('すべての値は1以上で指定してください。');
+      return;
+    }
+    
+    params = {
+      autoMode: false,
+      epochs: parseInt(epochs),
+      batchSize: parseInt(batchSize),
+      modelType: modelType,
+      hiddenLayers: parseInt(hiddenLayers),
+      hiddenUnits: parseInt(hiddenUnits)
+    };
   }
   
   try {
@@ -264,10 +324,7 @@ async function trainModel() {
     }, 1000);
     
     // バックエンドにトレーニングリクエストを送信
-    const result = await window.api.trainModel({
-      epochs: parseInt(epochs),
-      batchSize: parseInt(batchSize)
-    });
+    const result = await window.api.trainModel(params);
     
     // 学習完了時の処理
     clearInterval(progressInterval);
@@ -275,7 +332,11 @@ async function trainModel() {
     document.getElementById('training-status').textContent = '学習完了！';
     
     setTimeout(() => {
-      alert(`モデルの学習が完了しました。\n精度: ${formatPercentage(result.accuracy)}`);
+      if (isAutoMode) {
+        alert(`モデルの学習が完了しました。\n精度: ${formatPercentage(result.accuracy)}\n\n自動設定値: エポック数=${result.usedParams.epochs}, バッチサイズ=${result.usedParams.batchSize}, モデルタイプ=${result.usedParams.modelType}, 隠れ層数=${result.usedParams.hiddenLayers}`);
+      } else {
+        alert(`モデルの学習が完了しました。\n精度: ${formatPercentage(result.accuracy)}`);
+      }
     }, 500);
   } catch (error) {
     console.error('モデル学習に失敗しました:', error);
@@ -290,18 +351,44 @@ async function trainModel() {
 
 // 設定を保存する関数
 async function saveSettings() {
-  const modelType = document.getElementById('model-type').value;
-  const hiddenLayers = document.getElementById('hidden-layers').value;
-  const hiddenUnits = document.getElementById('hidden-units').value;
+  // 自動設定モードかどうかを確認
+  const isAutoMode = document.getElementById('settings-auto-mode').checked;
   
-  try {
-    await window.api.saveSettings({
-      modelType,
+  let params = {};
+  
+  if (isAutoMode) {
+    // 自動モードの場合は、自動設定フラグのみ送信
+    params = {
+      autoMode: true
+    };
+  } else {
+    // 手動モードの場合は、ユーザー設定値を使用
+    const modelType = document.getElementById('model-type').value;
+    const hiddenLayers = document.getElementById('hidden-layers').value;
+    const hiddenUnits = document.getElementById('hidden-units').value;
+    
+    // 値の検証
+    if (hiddenLayers < 1 || hiddenUnits < 1) {
+      alert('すべての値は1以上で指定してください。');
+      return;
+    }
+    
+    params = {
+      autoMode: false,
+      modelType: modelType,
       hiddenLayers: parseInt(hiddenLayers),
       hiddenUnits: parseInt(hiddenUnits)
-    });
+    };
+  }
+  
+  try {
+    await window.api.saveSettings(params);
     
-    alert('設定が保存されました。');
+    if (isAutoMode) {
+      alert('自動設定モードが有効になりました。データサイズに基づいて最適なパラメータが使用されます。');
+    } else {
+      alert('設定が保存されました。');
+    }
   } catch (error) {
     console.error('設定の保存に失敗しました:', error);
     alert('設定の保存中にエラーが発生しました。');
