@@ -1,0 +1,46 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# データベース
+app/database/*.db
+
+# 学習済みモデル
+app/models/*.pth
+
+# Mac
+.DS_Store
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ビルド後のファイル
+dist/
+out/ 

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>需要予測アプリ</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>需要予測システム</h1>
+    </header>
+    
+    <main>
+      <div class="container">
+        <div class="sidebar">
+          <div class="menu-item active" data-tab="prediction">
+            <span>需要予測</span>
+          </div>
+          <div class="menu-item" data-tab="data-management">
+            <span>データ管理</span>
+          </div>
+          <div class="menu-item" data-tab="model-training">
+            <span>モデル学習</span>
+          </div>
+          <div class="menu-item" data-tab="settings">
+            <span>設定</span>
+          </div>
+        </div>
+        
+        <div class="content">
+          <!-- 需要予測タブ -->
+          <div class="tab-content active" id="prediction-tab">
+            <h2>需要予測</h2>
+            <div class="prediction-controls">
+              <div class="form-group">
+                <label for="prediction-period">予測期間</label>
+                <select id="prediction-period">
+                  <option value="30">1ヶ月間</option>
+                  <option value="90">3ヶ月間</option>
+                  <option value="180">6ヶ月間</option>
+                </select>
+              </div>
+              <button id="run-prediction" class="btn-primary">予測実行</button>
+            </div>
+            
+            <div class="prediction-results">
+              <div class="chart-container">
+                <canvas id="prediction-chart"></canvas>
+              </div>
+              <div class="metrics">
+                <div class="metric-item">
+                  <span class="metric-title">予測総需要</span>
+                  <span class="metric-value" id="total-demand">-</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-title">前年比</span>
+                  <span class="metric-value" id="yoy-change">-</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-title">予測精度</span>
+                  <span class="metric-value" id="prediction-accuracy">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- データ管理タブ -->
+          <div class="tab-content" id="data-management-tab">
+            <h2>データ管理</h2>
+            <div class="data-controls">
+              <div class="form-group">
+                <label for="data-file">CSVファイルをインポート</label>
+                <input type="file" id="data-file" accept=".csv">
+              </div>
+              <button id="import-data" class="btn-primary">インポート</button>
+            </div>
+            
+            <div class="data-table-container">
+              <table id="data-table">
+                <thead>
+                  <tr>
+                    <th>日付</th>
+                    <th>売上</th>
+                    <th>その他の特徴量</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- データがここに動的に挿入されます -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- モデル学習タブ -->
+          <div class="tab-content" id="model-training-tab">
+            <h2>モデル学習</h2>
+            <div class="training-controls">
+              <div class="form-group">
+                <label for="epochs">学習エポック数</label>
+                <input type="number" id="epochs" min="1" value="50">
+              </div>
+              <div class="form-group">
+                <label for="batch-size">バッチサイズ</label>
+                <input type="number" id="batch-size" min="1" value="32">
+              </div>
+              <button id="train-model" class="btn-primary">モデル学習開始</button>
+            </div>
+            
+            <div class="training-progress">
+              <div class="progress-bar-container">
+                <div class="progress-bar" id="training-progress-bar"></div>
+              </div>
+              <div class="progress-status" id="training-status">準備完了</div>
+            </div>
+          </div>
+          
+          <!-- 設定タブ -->
+          <div class="tab-content" id="settings-tab">
+            <h2>設定</h2>
+            <div class="settings-form">
+              <div class="form-group">
+                <label for="model-type">予測モデルタイプ</label>
+                <select id="model-type">
+                  <option value="lstm">LSTM</option>
+                  <option value="gru">GRU</option>
+                  <option value="transformer">Transformer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="hidden-layers">隠れ層数</label>
+                <input type="number" id="hidden-layers" min="1" value="2">
+              </div>
+              <div class="form-group">
+                <label for="hidden-units">隠れユニット数</label>
+                <input type="number" id="hidden-units" min="1" value="64">
+              </div>
+              <button id="save-settings" class="btn-primary">設定を保存</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>© 2023 需要予測アプリ - オープンソースソフトウェア</p>
+    </footer>
+  </div>
+
+  <script src="js/chart.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html> 
