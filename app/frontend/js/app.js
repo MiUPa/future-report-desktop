@@ -103,14 +103,40 @@ function displayPredictionResults(result) {
     window.predictionChart.destroy(); // 既存のチャートを破棄
   }
   
+  // データを分離する - 実績データと予測データを分ける
+  const allDates = result.dates;
+  const historicalData = result.historicalData;
+  const forecastData = result.forecastData;
+  
+  // 実績データと予測データを別々の配列に保持
+  const historicalDates = [];
+  const historicalValues = [];
+  const forecastDates = [];
+  const forecastValues = [];
+  
+  // 実績データが存在する日付を特定
+  const lastHistoricalDataIndex = historicalData.findIndex(value => value === null || value === undefined);
+  const lastHistoricalDate = lastHistoricalDataIndex !== -1 ? lastHistoricalDataIndex - 1 : historicalData.length - 1;
+  
+  // 実績データと予測データを分離
+  for (let i = 0; i < allDates.length; i++) {
+    if (i <= lastHistoricalDate) {
+      historicalDates.push(allDates[i]);
+      historicalValues.push(historicalData[i]);
+    } else {
+      forecastDates.push(allDates[i]);
+      forecastValues.push(forecastData[i]);
+    }
+  }
+  
   window.predictionChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: result.dates,
+      labels: allDates,
       datasets: [
         {
           label: '実績',
-          data: result.historicalData,
+          data: historicalData.map((value, index) => index <= lastHistoricalDate ? value : null),
           borderColor: '#4a6baf',
           backgroundColor: 'rgba(74, 107, 175, 0.1)',
           borderWidth: 2,
@@ -119,7 +145,7 @@ function displayPredictionResults(result) {
         },
         {
           label: '予測',
-          data: result.forecastData,
+          data: forecastData.map((value, index) => index > lastHistoricalDate ? value : null),
           borderColor: '#e9792b',
           backgroundColor: 'rgba(233, 121, 43, 0.1)',
           borderWidth: 2,

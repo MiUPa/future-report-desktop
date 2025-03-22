@@ -12,5 +12,8 @@ contextBridge.exposeInMainWorld('api', {
   saveData: (data) => ipcRenderer.invoke('save-data', data),
   
   // データの読み込み
-  loadData: () => ipcRenderer.invoke('load-data')
+  loadData: () => ipcRenderer.invoke('load-data'),
+  
+  // 設定の保存
+  saveSettings: (data) => ipcRenderer.invoke('save-settings', data)
 }); 
