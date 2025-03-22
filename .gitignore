@@ -44,3 +44,7 @@ app/models/*.pth
 # ビルド後のファイル
 dist/
 out/ 
+venv/ 
+
+# Environment variables
+.env 
